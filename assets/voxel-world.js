@@ -6,8 +6,12 @@ const canvas = document.querySelector(".world-canvas");
 if (stage && canvas && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   try {
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "low-power" });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 700 ? 1.5 : 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.12;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setClearColor(0x000000, 0);
 
     const scene = new THREE.Scene();
@@ -18,6 +22,14 @@ if (stage && canvas && !window.matchMedia("(prefers-reduced-motion: reduce)").ma
     scene.add(new THREE.HemisphereLight(0xb9c2ff, 0x17142f, 2.1));
     const keyLight = new THREE.DirectionalLight(0xe9e0ff, 3.1);
     keyLight.position.set(-5, 9, 6);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.set(1024, 1024);
+    keyLight.shadow.camera.left = -8;
+    keyLight.shadow.camera.right = 8;
+    keyLight.shadow.camera.top = 8;
+    keyLight.shadow.camera.bottom = -8;
+    keyLight.shadow.bias = -0.0004;
+    keyLight.shadow.camera.updateProjectionMatrix();
     scene.add(keyLight);
     const rimLight = new THREE.PointLight(0x7365ff, 20, 22, 2);
     rimLight.position.set(5, 3, -4);
@@ -32,6 +44,15 @@ if (stage && canvas && !window.matchMedia("(prefers-reduced-motion: reduce)").ma
       new THREE.MeshStandardMaterial({ color: 0x252d59, roughness: 0.92, metalness: 0.01 })
     ];
     const cells = [[], [], []];
+
+    const islandBase = new THREE.Mesh(
+      new THREE.BoxGeometry(10.2, 0.72, 7.1),
+      new THREE.MeshStandardMaterial({ color: 0x272d63, emissive: 0x11163e, emissiveIntensity: 0.35, roughness: 0.74, metalness: 0.08 })
+    );
+    islandBase.position.set(0, -1.72, -0.55);
+    islandBase.castShadow = true;
+    islandBase.receiveShadow = true;
+    world.add(islandBase);
 
     for (let z = -5; z <= 3; z++) {
       for (let x = -7; x <= 7; x++) {
@@ -50,6 +71,8 @@ if (stage && canvas && !window.matchMedia("(prefers-reduced-motion: reduce)").ma
     cells.forEach((blocks, type) => {
       if (!blocks.length) return;
       const mesh = new THREE.InstancedMesh(blockGeometry, materials[type], blocks.length);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
       blocks.forEach((block, index) => {
         dummy.position.set(block.x, block.y, block.z);
         dummy.scale.setScalar(0.68);
@@ -76,6 +99,7 @@ if (stage && canvas && !window.matchMedia("(prefers-reduced-motion: reduce)").ma
       cube.position.set(x, y, z);
       cube.scale.setScalar(size);
       cube.rotation.set(index * 0.2, index * 0.4, index * 0.12);
+      cube.castShadow = true;
       cube.userData.baseY = y;
       cube.userData.floatOffset = index * 1.17;
       floatingBlocks.push(cube);
@@ -88,6 +112,14 @@ if (stage && canvas && !window.matchMedia("(prefers-reduced-motion: reduce)").ma
     );
     moon.position.set(3.9, 3.15, -4.1);
     world.add(moon);
+    const lunarOrbit = new THREE.Mesh(
+      new THREE.TorusGeometry(1.02, 0.012, 8, 72),
+      new THREE.MeshBasicMaterial({ color: 0xc3b4ff, transparent: true, opacity: 0.58 })
+    );
+    lunarOrbit.position.copy(moon.position);
+    lunarOrbit.rotation.set(0.55, -0.42, 0.24);
+    lunarOrbit.scale.set(1.35, 0.82, 1);
+    world.add(lunarOrbit);
 
     const starPositions = new Float32Array(150 * 3);
     for (let index = 0; index < 150; index++) {
@@ -130,6 +162,8 @@ if (stage && canvas && !window.matchMedia("(prefers-reduced-motion: reduce)").ma
         cube.rotation.y += 0.0016;
       });
       moon.position.y = 3.15 + Math.sin(frame * 0.6) * 0.08;
+      lunarOrbit.position.y = moon.position.y;
+      lunarOrbit.rotation.z += 0.0007;
       renderer.render(scene, camera);
       animationId = window.requestAnimationFrame(animate);
     }
