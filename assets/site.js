@@ -220,30 +220,62 @@
   const changelogRoot = document.querySelector("[data-changelog]");
   if (downloadsRoot || changelogRoot) {
     const state = document.querySelector("[data-release-state]");
-    getReleases().then(releases => {
-      renderDownloadPage(releases);
-      renderChangelog(releases);
-    }).catch(() => {
-      if (state) state.textContent = "Unable to check GitHub Releases";
-      document.querySelectorAll("[data-download-platform]").forEach(card => {
-        const target = card.querySelector("[data-assets]");
-        if (!target) return;
-        const empty = document.createElement("p");
-        empty.className = "empty-release";
-        empty.textContent = "Unable to load official releases right now.";
-        const link = document.createElement("a");
-        link.href = `https://github.com/${repository}/releases`;
-        link.textContent = "View releases on GitHub";
-        link.target = "_blank";
-        link.rel = "noreferrer";
-        target.replaceChildren(empty, link);
-      });
-      if (changelogRoot) {
-        const fallback = document.createElement("p");
-        fallback.className = "empty-release";
-        fallback.textContent = "Unable to load release history. Visit the official GitHub Releases page.";
-        changelogRoot.replaceChildren(fallback);
+    let cachedReleases = null;
+    let renderedSignature = "";
+    const makeReleaseSignature = releases => JSON.stringify(releases.map(release => [
+      release.id,
+      release.body,
+      release.assets?.map(asset => [asset.id, asset.name, asset.updated_at]) || []
+    ]));
+
+    const refreshReleases = async () => {
+      try {
+        const releases = await getReleases();
+        cachedReleases = releases;
+        const signature = makeReleaseSignature(releases);
+        if (signature !== renderedSignature) {
+          renderDownloadPage(releases);
+          renderChangelog(releases);
+          renderedSignature = signature;
+        }
+        if (state) {
+          const checkedAt = new Intl.DateTimeFormat("en", { hour: "numeric", minute: "2-digit" }).format(new Date());
+          state.textContent = `${Object.keys(platformRules).filter(platform => latestAssetRelease(releases, platform)).length} platform releases · Checked ${checkedAt}`;
+        }
+      } catch {
+        if (cachedReleases) {
+          if (state) state.textContent = "Could not refresh · showing last checked releases";
+          return;
+        }
+        if (state) state.textContent = "Unable to check GitHub Releases";
+        document.querySelectorAll("[data-download-platform]").forEach(card => {
+          const target = card.querySelector("[data-assets]");
+          if (!target) return;
+          const empty = document.createElement("p");
+          empty.className = "empty-release";
+          empty.textContent = "Unable to load official releases right now.";
+          const link = document.createElement("a");
+          link.href = `https://github.com/${repository}/releases`;
+          link.textContent = "View releases on GitHub";
+          link.target = "_blank";
+          link.rel = "noreferrer";
+          target.replaceChildren(empty, link);
+        });
+        if (changelogRoot) {
+          const fallback = document.createElement("p");
+          fallback.className = "empty-release";
+          fallback.textContent = "Unable to load release history. Visit the official GitHub Releases page.";
+          changelogRoot.replaceChildren(fallback);
+        }
       }
+    };
+
+    refreshReleases();
+    window.setInterval(() => {
+      if (!document.hidden) refreshReleases();
+    }, 120000);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) refreshReleases();
     });
   }
 })();
