@@ -6,6 +6,41 @@
   };
   const menuButton = document.querySelector(".menu-toggle");
   const navigation = document.querySelector(".main-nav");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  const scrollProgress = document.createElement("div");
+  scrollProgress.className = "scroll-progress";
+  scrollProgress.setAttribute("aria-hidden", "true");
+  document.body.append(scrollProgress);
+  let scrollFrame = 0;
+  const updateScrollProgress = () => {
+    scrollFrame = 0;
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = scrollable > 0 ? Math.min(window.scrollY / scrollable, 1) : 0;
+    scrollProgress.style.transform = `scaleX(${progress})`;
+  };
+  window.addEventListener("scroll", () => {
+    if (!scrollFrame) scrollFrame = window.requestAnimationFrame(updateScrollProgress);
+  }, { passive: true });
+  window.addEventListener("resize", updateScrollProgress, { passive: true });
+  updateScrollProgress();
+
+  if (!reducedMotion.matches && "IntersectionObserver" in window) {
+    document.documentElement.classList.add("motion-ready");
+    const revealTargets = document.querySelectorAll("main .section-heading, main .feature-card, main .why-item, main .loader, main .platform-card, main .surface-card, main .release-card, main .doc-section, main .faq-item, main .about-panel, main .cta");
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -35px 0px" });
+    revealTargets.forEach((element, index) => {
+      element.classList.add("scroll-reveal");
+      element.style.setProperty("--reveal-index", String(index % 5));
+      revealObserver.observe(element);
+    });
+  }
 
   if (menuButton && navigation) {
     const closeMenu = () => {
