@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10150f">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin — Moon Launcher</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{color-scheme:dark;--bg:#10150f;--surface:#171d16;--surface2:#20271e;--line:#394234;--text:#f0f0df;--muted:#9da694;--lime:#c9f36a;--red:#ff917a;--font:"Space Grotesk","Trebuchet MS",sans-serif;--mono:"DM Mono",monospace}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased}button,input,select{font:inherit}button{cursor:pointer}a{color:inherit}
+    .shell{min-height:100vh;display:grid;grid-template-columns:244px minmax(0,1fr)}
+    .rail{position:sticky;top:0;height:100vh;padding:25px 17px;border-right:1px solid var(--line);background:#131912;display:flex;flex-direction:column}
+    .brand{display:flex;align-items:center;gap:11px;padding:0 10px 28px;text-decoration:none;font-weight:700;font-size:13px}
+    .brand-mark{width:34px;height:34px;display:grid;place-items:center;border-radius:8px;background:var(--lime);color:var(--bg)}.brand-mark svg{width:22px;height:22px}
+    .rail-label{margin:14px 10px 9px;color:#778171;font:9px var(--mono);letter-spacing:0;text-transform:uppercase}
+    .rail-link{display:flex;align-items:center;gap:11px;padding:11px 10px;border-radius:5px;color:#abb3a5;text-decoration:none;font-size:12px}.rail-link.active{color:var(--lime);background:#222a1e}.rail-link svg{width:16px;height:16px;flex:none}
+    .rail-bottom{margin-top:auto;padding:16px 10px 0;border-top:1px solid var(--line);color:#84907d;font:9px/1.7 var(--mono)}.rail-bottom a{color:#c3ccb9;text-decoration:none}
+    .main{min-width:0}.topbar{height:69px;padding:0 36px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .crumb{color:#8e9985;font:10px var(--mono)}.crumb strong{color:var(--text);font-weight:400}.top-actions{display:flex;align-items:center;gap:16px}.secure{display:flex;align-items:center;gap:7px;color:#aab39f;font:9px var(--mono)}.secure:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 9px #c9f36a88}
+    .logout{display:none;border:0;background:none;color:#b8c0b1;font-size:11px}.logout:hover{color:var(--lime)}
+    .content{width:min(1050px,100%);margin:0 auto;padding:42px 36px 68px}.heading-row{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:28px}.eyebrow{color:var(--lime);font:10px var(--mono);text-transform:uppercase}.heading-row h1{margin:9px 0 7px;font-size:31px;line-height:1.1;font-weight:600}.heading-row p{margin:0;color:var(--muted);font-size:12px}
+    .version-pill{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:4px;color:#b6c0ad;font:9px var(--mono);white-space:nowrap}.version-pill:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--lime)}
+    .login-wrap{max-width:430px;margin:9vh auto 0}.login-mark{width:48px;height:48px;display:grid;place-items:center;margin-bottom:24px;border:1px solid #536345;border-radius:10px;color:var(--lime);background:#192116}.login-mark svg{width:24px;height:24px}.login-wrap h1{margin:0 0 8px;font-size:28px}.login-wrap>p{margin:0 0 26px;color:var(--muted);font-size:13px;line-height:1.65}
+    .panel{border:1px solid var(--line);border-radius:7px;background:var(--surface)}.login-panel{padding:21px}.field-label{display:block;margin-bottom:8px;color:#b7c0af;font-size:11px;font-weight:600}.field,.select{width:100%;height:43px;padding:0 12px;border:1px solid #47513f;border-radius:4px;outline:none;background:#111710;color:var(--text);font-size:12px}.field:focus,.select:focus{border-color:var(--lime);box-shadow:0 0 0 2px #c9f36a20}.field::placeholder{color:#697562}.full-button{width:100%;height:43px;margin-top:13px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid var(--lime);border-radius:4px;background:var(--lime);color:var(--bg);font-size:12px;font-weight:700}.full-button:hover,.primary:hover{background:#d7ff7c}.full-button:disabled,.primary:disabled{opacity:.5;cursor:wait}.full-button svg{width:15px;height:15px}.hint{margin:14px 0 0;color:#7f8a78;font:9px/1.6 var(--mono)}
+    .notice{display:none;margin-top:13px;padding:11px 12px;border:1px solid #5c4639;border-radius:4px;background:#231b17;color:#efb49d;font-size:11px;line-height:1.5}.notice.show{display:block}.notice.success{border-color:#45543b;background:#1a2218;color:#c9f36a}
+    .workspace{display:none}.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.stat{padding:15px 16px;border:1px solid var(--line);border-radius:5px;background:#141a13}.stat-label{color:#85907e;font:9px var(--mono);text-transform:uppercase}.stat-value{margin-top:8px;font-size:17px;font-weight:600}.stat-value small{margin-left:6px;color:#85907e;font:9px var(--mono);font-weight:400}
+    .columns{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(270px,.75fr);gap:13px}.section{padding:20px}.section-head{display:flex;align-items:start;justify-content:space-between;gap:12px;margin-bottom:17px}.section-head h2{margin:0;font-size:15px;font-weight:600}.section-head p{margin:5px 0 0;color:var(--muted);font-size:10px;line-height:1.5}.section-index{color:#87927f;font:9px var(--mono)}
+    .dropzone{min-height:167px;padding:22px;border:1px dashed #59664d;border-radius:5px;display:grid;place-items:center;text-align:center;background:linear-gradient(145deg,#1a2118,#151b14);transition:border-color .15s,background .15s}.dropzone.drag{border-color:var(--lime);background:#202a1b}.drop-icon{width:35px;height:35px;margin:0 auto 10px;display:grid;place-items:center;border:1px solid #47543d;border-radius:7px;color:var(--lime)}.drop-icon svg{width:18px;height:18px}.dropzone strong{display:block;font-size:11px}.dropzone span{display:block;margin-top:5px;color:#8e9985;font:9px var(--mono)}.choose{display:inline-flex;align-items:center;gap:7px;margin-top:12px;color:var(--lime);font-size:10px;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer}.file-input{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;clip-path:inset(50%)}
+    .file-list{display:grid;gap:7px;margin-top:10px}.file-row{min-width:0;padding:10px 11px;display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:10px;border:1px solid #343e30;border-radius:4px;background:#141a13}.file-type{width:28px;height:30px;display:grid;place-items:center;border-radius:3px;background:#242d20;color:var(--lime);font:8px var(--mono);text-transform:uppercase}.file-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e3e7d8;font-size:10px}.file-size{margin-top:3px;color:#84907d;font:8px var(--mono)}.file-remove{width:25px;height:25px;border:0;border-radius:3px;background:transparent;color:#9da694;font-size:16px}.file-remove:hover{background:#2b211e;color:var(--red)}.progress{height:3px;margin-top:7px;background:#30382c}.progress span{display:block;height:100%;width:0;background:var(--lime);transition:width .15s}
+    .release-controls{display:grid;gap:14px}.divider{height:1px;background:var(--line);margin:2px 0}.inline-label{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}.inline-label .field-label{margin:0}.small-action{border:0;background:none;color:var(--lime);font:9px var(--mono)}.release-detail{min-height:37px;margin-top:8px;color:#8e9985;font:9px/1.55 var(--mono)}.release-detail b{color:#c9d2be;font-weight:400}.create-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:8px}.create-grid .field{height:38px;font-size:10px}.secondary,.primary{min-height:39px;padding:0 12px;border-radius:4px;font-size:10px;font-weight:600}.secondary{border:1px solid #4a5542;background:#20271e;color:#dce1d2}.secondary:hover{border-color:var(--lime);color:var(--lime)}.primary{border:1px solid var(--lime);background:var(--lime);color:var(--bg)}.upload-button{width:100%;margin-top:11px}.publish{width:100%;margin-top:8px}.secondary:disabled{opacity:.4;cursor:not-allowed}
+    .release-list{display:grid;gap:7px;margin-top:12px}.release-item{padding:9px 10px;border:1px solid #343e30;border-radius:4px;color:#cbd2c2;font:9px var(--mono)}.release-item span{float:right;color:#87927f}.activity{margin-top:14px;padding:13px;border-left:2px solid #536345;background:#141a13;color:#aeb8a4;font-size:10px;line-height:1.55}.activity:empty{display:none}
+    .footer-note{margin-top:18px;color:#73806e;font:9px/1.6 var(--mono)}
+    @media(max-width:850px){.shell{grid-template-columns:68px minmax(0,1fr)}.rail{padding-inline:10px}.brand{justify-content:center;padding-inline:0}.brand-name,.rail-label,.rail-link span,.rail-bottom{display:none}.rail-link{justify-content:center;padding:12px 0}.rail-link svg{width:19px;height:19px}.topbar{padding-inline:22px}.content{padding:33px 22px 56px}.columns{grid-template-columns:1fr}.stat-row{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:560px){.shell{display:block}.rail{position:fixed;z-index:5;top:auto;bottom:0;left:0;right:0;width:100%;height:58px;padding:5px 16px;border-right:0;border-top:1px solid var(--line);flex-direction:row;justify-content:center;background:#131912}.brand,.rail-label,.rail-bottom{display:none}.rail-link{width:52px;padding:9px}.topbar{height:59px;padding-inline:16px}.secure{font-size:8px}.content{padding:28px 15px 83px}.heading-row{align-items:start;flex-direction:column;margin-bottom:20px}.heading-row h1{font-size:27px}.version-pill{font-size:8px}.stat-row{gap:6px}.stat{padding:11px 9px}.stat-value{font-size:14px}.stat-value small{display:block;margin:4px 0 0}.section{padding:15px}.login-wrap{margin-top:8vh}.create-grid{grid-template-columns:1fr 1.1fr}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail" aria-label="Menu admin">
+      <a class="brand" href="/" aria-label="Moon Launcher beranda"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M16.8 3.8a8.6 8.6 0 1 0 3.4 15.9A9.2 9.2 0 0 1 16.8 3.8Z" fill="currentColor"/><path d="m17.5 6.2 1 2.1 2.3.3-1.7 1.6.4 2.3-2-1.1-2 1.1.4-2.3-1.7-1.6 2.3-.3 1-2.1Z" fill="#10150f"/></svg></span><span class="brand-name">MOON LAUNCHER</span></a>
+      <div class="rail-label">Workspace</div>
+      <a class="rail-link active" href="#overview"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/></svg><span>Ringkasan</span></a>
+      <a class="rail-link" href="#upload"><svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 16v4h16v-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Unggah file</span></a>
+      <div class="rail-bottom">RELEASE CHANNEL<br><a href="https://github.com/moonlaunchermc/moonlauncher/releases" target="_blank" rel="noreferrer">moonlaunchermc ↗</a></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div class="crumb">MOON / <strong>CONTROL ROOM</strong></div><div class="top-actions"><div class="secure">KONEKSI TERLINDUNGI</div><button class="logout" id="logout" type="button">Keluar</button></div></header>
+      <section class="content">
+        <div class="login-wrap" id="login-view">
+          <div class="login-mark"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div class="eyebrow">Moon launcher / admin</div><h1>Control room.</h1><p>Masuk untuk mengelola release dan mengunggah build launcher langsung ke GitHub.</p>
+          <form class="panel login-panel" id="login-form"><label class="field-label" for="admin-password">Kata sandi admin</label><input class="field" id="admin-password" name="password" type="password" autocomplete="current-password" placeholder="Masukkan kata sandi" required><button class="full-button" id="login-button" type="submit"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Masuk ke panel</button><div class="hint">Akses admin diverifikasi server. Token GitHub tidak disimpan di browser setelah sesi berakhir.</div><div class="notice" id="login-notice" role="status"></div></form>
+        </div>
+
+        <div class="workspace" id="workspace">
+          <div class="heading-row"><div><div class="eyebrow">Moon launcher / rilis</div><h1>Build control.</h1><p>Kelola aset unduhan di repositori resmi Moon Launcher.</p></div><div class="version-pill" id="session-state">Sesi admin aktif</div></div>
+          <div class="stat-row"><div class="stat"><div class="stat-label">Repositori</div><div class="stat-value">Moon Launcher<small>PUBLIC RELEASES</small></div></div><div class="stat"><div class="stat-label">Rilis tersedia</div><div class="stat-value" id="release-count">—</div></div><div class="stat"><div class="stat-label">Token</div><div class="stat-value">Sementara<small>GITHUB APP</small></div></div></div>
+          <div class="columns">
+            <section class="panel section" id="upload">
+              <div class="section-head"><div><h2>Unggah build</h2><p>Tambahkan installer ke release pilihanmu.</p></div><span class="section-index">01 / ASSETS</span></div>
+              <div class="dropzone" id="dropzone"><div><div class="drop-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 16v4h16v-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><strong>Tarik file ke area ini</strong><span>EXE · MSI · APPIMAGE · APK · arsip · format lain</span><label class="choose" for="file-input">Pilih file dari perangkat</label><input class="file-input" id="file-input" type="file" multiple></div></div>
+              <div class="file-list" id="file-list"></div><div class="activity" id="upload-status" aria-live="polite"></div>
+              <button class="primary upload-button" id="upload-button" type="button" disabled>Unggah file terpilih</button><button class="secondary publish" id="publish-button" type="button" hidden>Terbitkan release ini</button>
+              <p class="footer-note">File dikirim langsung ke GitHub Releases. Batas maksimum GitHub: 2 GB per aset.</p>
+            </section>
+
+            <section class="panel section">
+              <div class="section-head"><div><h2>Tujuan release</h2><p>Pilih release yang sudah ada atau buat draft baru.</p></div><span class="section-index">02 / RELEASE</span></div>
+              <div class="release-controls">
+                <div><div class="inline-label"><label class="field-label" for="release-select">Release aktif</label><button class="small-action" id="refresh-releases" type="button">REFRESH</button></div><select class="select" id="release-select"><option value="">Memuat daftar release…</option></select><div class="release-detail" id="release-detail"></div></div>
+                <div class="divider"></div>
+                <div><label class="field-label" for="new-tag">Buat draft release</label><div class="create-grid"><input type="text" class="field" id="new-tag" placeholder="v2.2.0" autocomplete="off"><input type="text" class="field" id="new-name" placeholder="Moon Launcher v2.2.0" autocomplete="off"></div><button class="secondary upload-button" id="create-release" type="button">Buat draft baru</button></div>
+              </div>
+              <div class="activity" id="release-status" aria-live="polite"></div><div class="release-list" id="recent-releases"></div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    const repository = "moonlaunchermc/moonlauncher";
+    let accessToken = "";
+    let releases = [];
+    let selectedFiles = [];
+    let tokenExpiry = 0;
+    const byId = id => document.getElementById(id);
+    const apiHeaders = () => ({ Accept: "application/vnd.github+json", Authorization: `Bearer ${accessToken}`, "X-GitHub-Api-Version": "2022-11-28" });
+
+    function showNotice(element, message, success = false) {
+      element.textContent = message;
+      element.className = `notice show${success ? " success" : ""}`;
+    }
+    function setStatus(element, message, success = false) {
+      element.textContent = message;
+      element.style.color = success ? "var(--lime)" : "var(--muted)";
+    }
+    function clearSession() {
+      accessToken = "";
+      clearTimeout(tokenExpiry);
+      byId("workspace").style.display = "none";
+      byId("login-view").style.display = "block";
+      byId("logout").style.display = "none";
+      byId("admin-password").value = "";
+    }
+    function formatBytes(bytes) {
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    }
+    function detectFilePlatform(name) {
+      if (/\.(exe|msi)$/i.test(name)) return "Windows";
+      if (/\.appimage$/i.test(name)) return "Linux";
+      if (/\.apk$/i.test(name)) return "Android";
+      return "Other file";
+    }
+    function renderFiles() {
+      const list = byId("file-list");
+      list.replaceChildren();
+      selectedFiles.forEach((file, index) => {
+        const row = document.createElement("div");
+        row.className = "file-row";
+        const extension = file.name.split(".").pop().slice(0, 5);
+        row.innerHTML = `<span class="file-type"></span><div><div class="file-name"></div><div class="file-size"></div><div class="progress"><span></span></div></div><button class="file-remove" type="button" aria-label="Hapus file">×</button>`;
+        row.querySelector(".file-type").textContent = extension;
+        row.querySelector(".file-name").textContent = file.name;
+        row.querySelector(".file-size").textContent = `${formatBytes(file.size)} · ${detectFilePlatform(file.name)}`;
+        row.querySelector(".file-remove").addEventListener("click", () => { selectedFiles.splice(index, 1); renderFiles(); });
+        list.append(row);
+      });
+      byId("upload-button").disabled = selectedFiles.length === 0;
+    }
+    function addFiles(files) {
+      const incoming = Array.from(files || []);
+      if (!incoming.length) {
+        setStatus(byId("upload-status"), "Tidak ada file yang terdeteksi. Coba pilih file atau drop ulang.");
+        return;
+      }
+      const knownFiles = new Set(selectedFiles.map(file => `${file.name}:${file.size}:${file.lastModified}`));
+      const addedFiles = incoming.filter(file => {
+        const key = `${file.name}:${file.size}:${file.lastModified}`;
+        if (knownFiles.has(key)) return false;
+        knownFiles.add(key);
+        return true;
+      });
+      selectedFiles = [...selectedFiles, ...addedFiles];
+      renderFiles();
+      setStatus(byId("upload-status"), addedFiles.length
+        ? `${addedFiles.length} file terdeteksi${incoming.length > addedFiles.length ? ` · ${incoming.length - addedFiles.length} duplikat dilewati` : ""}.`
+        : "File tersebut sudah ada di daftar.", true);
+    }
+    function getSelectedRelease() {
+      return releases.find(release => String(release.id) === byId("release-select").value);
+    }
+    function updateReleaseDetails() {
+      const release = getSelectedRelease();
+      const detail = byId("release-detail");
+      const publishButton = byId("publish-button");
+      if (!release) {
+        detail.textContent = "Pilih release untuk mengunggah file.";
+        publishButton.hidden = true;
+        return;
+      }
+      detail.replaceChildren();
+      const assetCount = document.createElement("b");
+      assetCount.textContent = release.assets.length;
+      detail.append(assetCount, document.createTextNode(` aset · ${release.draft ? "Draft belum publik" : "Sudah terbit"} · ${release.tag_name}`));
+      publishButton.hidden = !release.draft;
+    }
+    async function githubRequest(path, options = {}) {
+      const response = await fetch(`https://api.github.com/repos/${repository}${path}`, {
+        ...options,
+        headers: { ...apiHeaders(), ...(options.headers || {}) }
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.message || `GitHub API ${response.status}`);
+      return data;
+    }
+    async function loadReleases() {
+      setStatus(byId("release-status"), "Memuat release dari GitHub…");
+      const data = await githubRequest("/releases?per_page=100");
+      releases = data;
+      const select = byId("release-select");
+      const previous = select.value;
+      select.replaceChildren();
+      if (!releases.length) {
+        select.add(new Option("Belum ada release", ""));
+      } else {
+        releases.forEach(release => select.add(new Option(`${release.tag_name} · ${release.draft ? "DRAFT" : "PUBLIC"}`, release.id)));
+        if (releases.some(release => String(release.id) === previous)) select.value = previous;
+      }
+      byId("release-count").textContent = releases.length;
+      const recent = byId("recent-releases");
+      recent.replaceChildren();
+      releases.slice(0, 3).forEach(release => {
+        const item = document.createElement("div");
+        item.className = "release-item";
+        item.textContent = release.tag_name;
+        const state = document.createElement("span");
+        state.textContent = release.draft ? "DRAFT" : `${release.assets.length} FILE`;
+        item.append(state);
+        recent.append(item);
+      });
+      updateReleaseDetails();
+      setStatus(byId("release-status"), "Daftar release tersinkron.", true);
+    }
+    async function login(event) {
+      event.preventDefault();
+      const button = byId("login-button");
+      const notice = byId("login-notice");
+      button.disabled = true;
+      notice.className = "notice";
+      button.lastChild.textContent = " Memverifikasi…";
+      try {
+        const response = await fetch("/api/admin/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: byId("admin-password").value })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Login gagal.");
+        accessToken = data.token;
+        const expiresIn = Math.max(1000, new Date(data.expiresAt).getTime() - Date.now());
+        tokenExpiry = setTimeout(clearSession, expiresIn);
+        byId("login-view").style.display = "none";
+        byId("workspace").style.display = "block";
+        byId("logout").style.display = "inline-block";
+        await loadReleases();
+      } catch (error) {
+        clearSession();
+        showNotice(notice, error.message || "Tidak dapat terhubung. Periksa konfigurasi admin.");
+      } finally {
+        button.disabled = false;
+        button.lastChild.textContent = " Masuk ke panel";
+      }
+    }
+    function uploadFile(release, file, row, index, total) {
+      return new Promise((resolve, reject) => {
+        const uploadUrl = new URL(release.upload_url.replace("{?name,label}", ""));
+        uploadUrl.searchParams.set("name", file.name);
+        const request = new XMLHttpRequest();
+        const progress = row.querySelector(".progress span");
+        request.open("POST", uploadUrl);
+        request.setRequestHeader("Authorization", `Bearer ${accessToken}`);
+        request.setRequestHeader("Accept", "application/vnd.github+json");
+        request.setRequestHeader("X-GitHub-Api-Version", "2022-11-28");
+        request.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+        request.upload.onprogress = event => {
+          if (event.lengthComputable) progress.style.width = `${Math.round(event.loaded / event.total * 100)}%`;
+          setStatus(byId("upload-status"), `Mengunggah ${index + 1}/${total}: ${file.name} (${event.lengthComputable ? Math.round(event.loaded / event.total * 100) : 0}%)`);
+        };
+        request.onload = () => {
+          let data = {};
+          try { data = JSON.parse(request.responseText); } catch {}
+          if (request.status >= 200 && request.status < 300) resolve(data);
+          else reject(new Error(data.message || `GitHub menolak ${file.name} (${request.status})`));
+        };
+        request.onerror = () => reject(new Error(`Koneksi terputus saat mengunggah ${file.name}.`));
+        request.send(file);
+      });
+    }
+    async function uploadSelected() {
+      const release = getSelectedRelease();
+      if (!release) return setStatus(byId("upload-status"), "Pilih atau buat release terlebih dahulu.");
+      if (!selectedFiles.length) return;
+      const rows = [...byId("file-list").children];
+      byId("upload-button").disabled = true;
+      try {
+        for (let index = 0; index < selectedFiles.length; index++) {
+          await uploadFile(release, selectedFiles[index], rows[index], index, selectedFiles.length);
+        }
+        selectedFiles = [];
+        renderFiles();
+        await loadReleases();
+        setStatus(byId("upload-status"), "Semua file berhasil diunggah ke GitHub Releases.", true);
+      } catch (error) {
+        setStatus(byId("upload-status"), error.message);
+        byId("upload-button").disabled = selectedFiles.length === 0;
+      }
+    }
+    async function createRelease() {
+      const tag = byId("new-tag").value.trim();
+      const name = byId("new-name").value.trim() || tag;
+      if (!tag) return setStatus(byId("release-status"), "Isi tag versi untuk membuat release.");
+      const button = byId("create-release");
+      button.disabled = true;
+      try {
+        const release = await githubRequest("/releases", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tag_name: tag, name, draft: true, generate_release_notes: true })
+        });
+        await loadReleases();
+        byId("release-select").value = release.id;
+        updateReleaseDetails();
+        byId("new-tag").value = "";
+        byId("new-name").value = "";
+        setStatus(byId("release-status"), `Draft ${tag} dibuat. Unggah file lalu terbitkan.`, true);
+      } catch (error) {
+        setStatus(byId("release-status"), error.message);
+      } finally { button.disabled = false; }
+    }
+    async function publishRelease() {
+      const release = getSelectedRelease();
+      if (!release?.draft) return;
+      const button = byId("publish-button");
+      button.disabled = true;
+      try {
+        await githubRequest(`/releases/${release.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ draft: false })
+        });
+        await loadReleases();
+        setStatus(byId("release-status"), `${release.tag_name} berhasil diterbitkan.`, true);
+      } catch (error) {
+        setStatus(byId("release-status"), error.message);
+      } finally { button.disabled = false; }
+    }
+
+    byId("login-form").addEventListener("submit", login);
+    byId("logout").addEventListener("click", clearSession);
+    byId("file-input").addEventListener("change", event => {
+      addFiles(event.target.files);
+      event.target.value = "";
+    });
+    const dropzone = byId("dropzone");
+    dropzone.addEventListener("dragenter", event => {
+      event.preventDefault();
+      dropzone.classList.add("drag");
+    });
+    dropzone.addEventListener("dragover", event => {
+      event.preventDefault();
+      if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+      dropzone.classList.add("drag");
+    });
+    dropzone.addEventListener("dragleave", event => {
+      if (event.relatedTarget && dropzone.contains(event.relatedTarget)) return;
+      dropzone.classList.remove("drag");
+    });
+    dropzone.addEventListener("drop", event => {
+      event.preventDefault();
+      dropzone.classList.remove("drag");
+      addFiles(event.dataTransfer?.files);
+    });
+    byId("release-select").addEventListener("change", updateReleaseDetails);
+    byId("refresh-releases").addEventListener("click", () => loadReleases().catch(error => setStatus(byId("release-status"), error.message)));
+    byId("upload-button").addEventListener("click", uploadSelected);
+    byId("create-release").addEventListener("click", createRelease);
+    byId("publish-button").addEventListener("click", publishRelease);
+    window.addEventListener("pagehide", () => { accessToken = ""; });
+  </script>
+</body>
+</html>
